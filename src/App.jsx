@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
-  const data = [
-    { id: 1, name: "Alice Johnson", level1: 50, level2: 70, level3: 90 },
-    { id: 2, name: "Bob Smith", level1: 60, level2: 80, level3: 85 },
-    { id: 3, name: "Charlie Brown", level1: 40, level2: 65, level3: 78 },
-     { id: 4, name: "Charlie Brown", level1: 40, level2: 65, level3: 78 },
-  ];
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/leaderboard")
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error("Error fetching leaderboard:", err));
+  }, []);
 
   const getMedal = (index) => {
     switch (index) {
@@ -24,15 +26,14 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-white flex flex-col items-center py-10 px-4">
-      
-      {/* Animated Gradient Title */}
+      {/* Title */}
       <h1 className="text-6xl sm:text-8xl font-extrabold mb-8 text-center bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-400 bg-clip-text text-transparent animate-gradient">
         Cloudverse AWS JAM
       </h1>
 
-      {/* Glassy Table Container */}
-      <div className="mt-6 w-full max-w-[80vw] overflow-x-auto rounded-3xl bg-white/10 backdrop-blur-2xl shadow-2xl border border-white/20">
-        <table className="w-full text-center border-collapse rounded-3xl overflow-hidden text-xl sm:text-2xl">
+      {/* Table Container */}
+      <div className="mt-6 w-full max-w-[90vw] overflow-x-auto rounded-3xl bg-white/10 backdrop-blur-2xl shadow-2xl border border-white/20">
+        <table className="w-full text-center border-collapse text-lg sm:text-xl md:text-2xl">
           <thead>
             <tr className="bg-white/10 text-gray-200 uppercase tracking-wider">
               <th className="py-4 px-4 border-b border-white/20">Rank</th>
@@ -40,6 +41,9 @@ function App() {
               <th className="py-4 px-4 border-b border-white/20">Level 1</th>
               <th className="py-4 px-4 border-b border-white/20">Level 2</th>
               <th className="py-4 px-4 border-b border-white/20">Level 3</th>
+              <th className="py-4 px-4 border-b border-white/20">Level 4</th>
+              <th className="py-4 px-4 border-b border-white/20">Level 5</th>
+              <th className="py-4 px-4 border-b border-white/20">Level 6</th>
             </tr>
           </thead>
           <tbody>
@@ -48,16 +52,23 @@ function App() {
                 key={row.id}
                 className={`${
                   index % 2 === 0 ? "bg-white/5" : "bg-white/0"
-                } hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 animate-fade-in`}
-                style={{ animationDelay: `${index * 0.15}s` }}
+                } hover:bg-white/20 transition-all`}
               >
                 <td className="py-4 px-4 border-b border-white/10 font-bold">
                   {getMedal(index)}
                 </td>
-                <td className="py-4 px-4 border-b border-white/10">{row.name}</td>
-                <td className="py-4 px-4 border-b border-white/10">{row.level1}</td>
-                <td className="py-4 px-4 border-b border-white/10">{row.level2}</td>
-                <td className="py-4 px-4 border-b border-white/10">{row.level3}</td>
+                <td className={`py-4 px-4 border-b border-white/10 font-medium ${
+                  index > 10 ? "" : "blur-sm select-none text-white/50"
+                }`}>
+                  {row.name}
+                </td>
+                {[row.level1, row.level2, row.level3, row.level4, row.level5, row.level6].map((lvl, i) => (
+                  <td key={i} className={`py-4 px-4 border-b border-white/10 ${
+                    index > 10 ? "" : "blur-sm text-white/50"
+                  }`}>
+                    {lvl}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
